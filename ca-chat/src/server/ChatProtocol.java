@@ -1,5 +1,8 @@
 package server;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Created by Av on 08-09-2015.
  */
@@ -63,7 +66,7 @@ public class ChatProtocol {
                     break;
                 case STOP:
                     message = sendUserList();
-                    client.removeClient();
+                    client.setRunning(false);
                     break;
                 default:
                     errorMessage();
@@ -103,7 +106,8 @@ public class ChatProtocol {
     }
 
     private Message errorMessage() {
-        System.out.println("Message does not conform to the protocol!");
+        Logger.getLogger(Server.class.getName()).log(Level.WARNING, "Message does not conform to the protocol!");
+        System.out.println();
         Message message = Message.ERROR;
         message.getTo().add(client);
         return message;

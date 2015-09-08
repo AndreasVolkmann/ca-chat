@@ -92,5 +92,7 @@ public class Server {
         return clients;
     }
 
-
+    protected void finalize() {
+        Utils.closeLogger(Server.class.getName());
+    }
 }

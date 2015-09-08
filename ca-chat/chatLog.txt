@@ -1,2 +1,10 @@
-sep. 08, 2015 12:13:43 PM server.Server startServer
+sep. 08, 2015 5:20:58 PM server.Server startServer
 ??: Server started on port 9090
+sep. 08, 2015 5:21:10 PM server.ConnectionToClient run
+??: Received message: USER#AA
+sep. 08, 2015 5:21:10 PM server.Server run
+??: Sending message: USERLIST#AA
+sep. 08, 2015 5:21:15 PM server.ConnectionToClient run
+??: Received message: STOP
+sep. 08, 2015 5:21:15 PM server.Server run
+??: Sending message: USERLIST#AA

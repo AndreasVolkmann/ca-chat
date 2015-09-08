@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,15 +43,15 @@ public class ConnectionToClient extends Thread{
             String input;
             ChatProtocol protocol = new ChatProtocol(this);
             //Waiting for client input
-            while ((input = in.readLine()) != null && running) {
-                Logger.getLogger(ConnectionToClient.class.getName()).log(Level.INFO, ("Received message: " + input));
+            while (running && ((input = in.readLine()) != null)) {
+                Logger.getLogger(Server.class.getName()).log(Level.INFO, ("Received message: " + input));
                 Message message = protocol.processInput(input);
                 Server.getMessages().put(message); //Putting client input into a LinkedBlockingDeque
             }
         } catch (IOException ex) {
-            Logger.getLogger(ConnectionToClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
-            Logger.getLogger(ConnectionToClient.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             removeClient();
             deconstruct();
@@ -70,8 +71,13 @@ public class ConnectionToClient extends Thread{
     }
 
     protected void removeClient() {
+        System.out.println("Removing Client ...");
         Server.getClients().remove(this);
         running = false;
+    }
+
+    public void setRunning(boolean condition) {
+        running = condition;
     }
 
     private void deconstruct() {
