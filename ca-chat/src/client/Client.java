@@ -18,6 +18,7 @@ import java.util.Observable;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -30,6 +31,7 @@ public class Client extends Observable implements Runnable {
     private String ip;
     private BufferedReader in;
     private PrintWriter out;
+    private String name;
 
     public void connect(String address, int port) {
         try {
@@ -37,7 +39,9 @@ public class Client extends Observable implements Runnable {
             socket = new Socket(address, port);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            send("USER#Jonas");
+            
+            send("USER#"+name);
+            printWelcomeText();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -45,8 +49,26 @@ public class Client extends Observable implements Runnable {
     }
 
     public void send(String msg) {
+        System.out.println("Sending: "+msg);
         out.println(msg);
     }
+    
+    private void printWelcomeText()
+    {
+        setChanged();
+        notifyObservers("Welcome "+name);
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
+        
+    }
+
+    public String getName() {
+        return name;
+    }
+    
 
     public boolean isConnected() {
         return socket.isConnected();

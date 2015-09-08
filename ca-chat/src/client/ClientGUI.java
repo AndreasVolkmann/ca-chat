@@ -8,12 +8,15 @@ package client;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.DefaultListModel;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 /**
  *
  * @author Jonas
  */
-public class ClientGUI extends javax.swing.JFrame implements Observer{
+public class ClientGUI extends javax.swing.JFrame implements Observer {
 
     /**
      * Creates new form ClientGUI
@@ -21,15 +24,36 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
     Client client = new Client();
     Thread t1 = new Thread(client);
     DefaultListModel<String> model1;
-    
-    
+
     public ClientGUI() {
+
         initComponents();
         client.addObserver(this);
-       model1 = new DefaultListModel();
-       this.jList1.setModel(model1);
-       
-       //String[] names = {"Jonas","Bob","Hans"};
+        UIManager.put("OptionPane.cancelButtonText", "Close the chat");
+        UIManager.put("OptionPane.okButtonText","Connect to chat");
+         client.setName(JOptionPane.showInputDialog("Welcome to the chat! Before we start, what's your name?"));
+         if(client.getName() == null)
+         {
+             System.exit(-1);
+         }
+        
+         client.connect("localhost", 9090);
+        t1.start();
+
+        model1 = new DefaultListModel();
+        this.jList1.setModel(model1);
+        jList1.setSelectionModel(new DefaultListSelectionModel() {
+            @Override
+            public void setSelectionInterval(int index0, int index1) {
+                if (super.isSelectedIndex(index0)) {
+                    super.removeSelectionInterval(index0, index1);
+                } else {
+                    super.addSelectionInterval(index0, index1);
+                }
+            }
+        });
+        jList1.setSize(40,40);
+        //String[] names = {"Jonas","Bob","Hans"};
         //initList(names);
     }
 
@@ -51,8 +75,6 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
         jScrollPane2 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -69,6 +91,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jTextArea1.setEditable(false);
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
@@ -86,19 +109,11 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
             public Object getElementAt(int i) { return strings[i]; }
         });
         jList1.setToolTipText("");
+        jList1.setFixedCellHeight(20);
+        jList1.setFixedCellWidth(20);
+        jList1.setMaximumSize(new java.awt.Dimension(20, 20));
+        jList1.setMinimumSize(new java.awt.Dimension(20, 20));
         jScrollPane2.setViewportView(jList1);
-
-        jMenu1.setText("File");
-
-        jMenuItem1.setText("Connect");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jMenuItem1);
-
-        jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
 
@@ -111,46 +126,54 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 102, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))
+                .addGap(21, 21, 21))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
-                        .addGap(25, 25, 25))
-                    .addComponent(jScrollPane1))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addGap(19, 19, 19))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        client.send("MSG#"+this.jList1.getSelectedValue()+"#"+this.jTextField1.getText());
-        
+        String message = "MSG#";
+        int i = 0;
+        if (jList1.getSelectedValuesList().isEmpty()) {
+            message += "*";
+        } else {
+            for (Object col : jList1.getSelectedValuesList()) {
+                if (jList1.getSelectedValuesList().size() == 1) {
+                    message += col;
+                } else {
+                    if (i == jList1.getSelectedValuesList().size()) {
+                        message += col;
+                    } else {
+                        message += col;
+                        message += ",";
+                    }
+
+                }
+            }
+        }
+        message += "#" + this.jTextField1.getText();
+        System.out.println("Sending: " + message);
+        client.send(message);
         jTextField1.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        
-            client.connect("localhost", 9090);
-            jMenuItem1.setText("Disconnect");
-            t1.start();
-        
-       
-            
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,9 +213,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JList jList1;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -203,22 +224,23 @@ public class ClientGUI extends javax.swing.JFrame implements Observer{
 
     @Override
     public void update(Observable o, Object arg) {
-        if(arg instanceof String[])
-        {
-            initList((String[])arg);
-        }
-        else
-        {
-        jTextArea1.setText(jTextArea1.getText()+"\n"+arg);
+        if (arg instanceof String[]) {
+            initList((String[]) arg);
+        } else {
+            jTextArea1.setText(jTextArea1.getText() + "\n" + arg);
         }
     }
 
     private void initList(String[] stringArray) {
         this.model1.clear();
-        
+
         for (String str : stringArray) {
+            if(str.equals(client.getName()))
+            {
+                str += "(You)";
+            }
             model1.addElement(str);
-            
+
         }
     }
 }
