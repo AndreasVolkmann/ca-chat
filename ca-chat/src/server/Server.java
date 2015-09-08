@@ -10,17 +10,13 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Jonas
- */
 public class Server {
 
     private static final Properties properties = Utils.initProperties("server.properties");
     private static LinkedBlockingDeque<Message> messages;
     private static LinkedBlockingDeque<ConnectionToClient> clients;
 
-    private ServerSocket serverSocket;
+    private static ServerSocket serverSocket;
     private int port;
     private String ip;
 
@@ -49,12 +45,13 @@ public class Server {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             Utils.closeLogger(Server.class.getName());
+            serverSocket.close();
         }
     }
 
     private void run() {
         // Start accepting clients
-        new AcceptThread(serverSocket).start();
+        new AcceptThread().start();
         // process incoming messages
         while (true) {
             try {
@@ -67,11 +64,12 @@ public class Server {
                     send(message);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
             }
         }
     }
 
+    // Send to all excluding sender
     private void sendAll(Message message) {
         for (ConnectionToClient client : clients) {
             client.send(message.getContent());
@@ -79,7 +77,7 @@ public class Server {
     }
 
     private void send(Message message) {
-        for (ConnectionToClient client : message.getTo()) {
+        for (ConnectionToClient client : message.getRecipients()) {
             client.send(message.getContent());
         }
     }
@@ -92,7 +90,12 @@ public class Server {
         return clients;
     }
 
-    protected void finalize() {
-        Utils.closeLogger(Server.class.getName());
+    public static ServerSocket getServerSocket() {
+        return serverSocket;
     }
+
+    public static void addClient(ConnectionToClient client) throws InterruptedException {
+        clients.put(client);
+    }
+
 }

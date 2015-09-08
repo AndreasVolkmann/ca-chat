@@ -21,6 +21,7 @@ public class ConnectionToClient extends Thread{
 
     private boolean running;
     private String clientName;
+    private ChatProtocol protocol;
     //private int id;
 
     public ConnectionToClient(Socket socket) {
@@ -41,19 +42,26 @@ public class ConnectionToClient extends Thread{
     public void run() {
         try {
             String input;
-            ChatProtocol protocol = new ChatProtocol(this);
-            //Waiting for client input
+            protocol = new ChatProtocol(this);
             while (running && ((input = in.readLine()) != null)) {
-                Logger.getLogger(Server.class.getName()).log(Level.INFO, ("Received message: " + input));
+                //Waiting for client input
                 Message message = protocol.processInput(input);
                 Server.getMessages().put(message); //Putting client input into a LinkedBlockingDeque
+                Logger.getLogger(Server.class.getName()).log(Level.INFO, (clientName + ": " + input));
             }
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
-            removeClient();
+            if (running) { // if it is still running it might not have been closed properly
+                removeClient();
+                try {
+                    Server.getMessages().put(protocol.sendUserList());
+                } catch (InterruptedException e) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
+                }
+            }
             deconstruct();
         }
     }

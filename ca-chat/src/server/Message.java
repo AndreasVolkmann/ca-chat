@@ -11,7 +11,7 @@ public class Message {
     public static final Message ERROR = new Message("ERROR");
 
     private ConnectionToClient from;
-    private ArrayList<ConnectionToClient> to = new ArrayList<>();
+    private ArrayList<ConnectionToClient> recipients = new ArrayList<>();
     private String content;
 
     public Message() {
@@ -26,8 +26,8 @@ public class Message {
         return from;
     }
 
-    public ArrayList<ConnectionToClient> getTo() {
-        return to;
+    public ArrayList<ConnectionToClient> getRecipients() {
+        return recipients;
     }
 
     public String getContent() {
@@ -38,8 +38,8 @@ public class Message {
         this.from = from;
     }
 
-    public void setTo(ArrayList<ConnectionToClient> to) {
-        this.to = to;
+    public void addRecipient(ConnectionToClient client) {
+        recipients.add(client);
     }
 
     public void setContent(String content) {
