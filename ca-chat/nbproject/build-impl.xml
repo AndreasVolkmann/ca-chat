@@ -338,7 +338,7 @@ is divided into following sections:
                     <path>
                         <filelist dir="@{destdir}" files="${javac.includes}"/>
                     </path>
-                    <globmapper from="*.java" receipients="*.class"/>
+                    <globmapper from="*.java" to="*.class"/>
                 </pathconvert>
                 <tempfile deleteonexit="true" property="javac.includesfile.binary"/>
                 <echo file="${javac.includesfile.binary}" message="${javac.includes.binary}"/>
@@ -385,7 +385,7 @@ is divided into following sections:
                     <test methods="@{testmethods}" name="@{testincludes}" todir="${build.test.results.dir}"/>
                     <syspropertyset>
                         <propertyref prefix="test-sys-prop."/>
-                        <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="test-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <formatter type="brief" usefile="false"/>
                     <formatter type="xml"/>
@@ -415,7 +415,7 @@ is divided into following sections:
                     </batchtest>
                     <syspropertyset>
                         <propertyref prefix="test-sys-prop."/>
-                        <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="test-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <formatter type="brief" usefile="false"/>
                     <formatter type="xml"/>
@@ -447,7 +447,7 @@ is divided into following sections:
                     <xmlfileset dir="${build.test.classes.dir}" includes="@{testincludes}"/>
                     <propertyset>
                         <propertyref prefix="test-sys-prop."/>
-                        <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="test-sys-prop.*" to="*" type="glob"/>
                     </propertyset>
                     <customize/>
                 </testng>
@@ -527,7 +527,7 @@ is divided into following sections:
                     <test methods="@{testmethods}" name="@{testincludes}" todir="${build.test.results.dir}"/>
                     <syspropertyset>
                         <propertyref prefix="test-sys-prop."/>
-                        <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="test-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <formatter type="brief" usefile="false"/>
                     <formatter type="xml"/>
@@ -559,7 +559,7 @@ is divided into following sections:
                     </batchtest>
                     <syspropertyset>
                         <propertyref prefix="test-sys-prop."/>
-                        <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="test-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <formatter type="brief" usefile="false"/>
                     <formatter type="xml"/>
@@ -659,7 +659,7 @@ is divided into following sections:
                     <customize2>
                         <syspropertyset>
                             <propertyref prefix="test-sys-prop."/>
-                            <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                            <mapper from="test-sys-prop.*" to="*" type="glob"/>
                         </syspropertyset>
                     </customize2>
                 </j2seproject3:testng-debug-impl>
@@ -704,7 +704,7 @@ is divided into following sections:
                     </classpath>
                     <syspropertyset>
                         <propertyref prefix="run-sys-prop."/>
-                        <mapper from="run-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="run-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <customize/>
                 </java>
@@ -712,7 +712,7 @@ is divided into following sections:
         </macrodef>
     </target>
     <target depends="-profile-pre-init, init, -profile-post-init, -profile-init-macrodef-profile" if="profiler.info.jvmargs.agent" name="-profile-init-check">
-        <fail unless="profiler.info.jvm">Must set JVM receipients use for profiling in profiler.info.jvm</fail>
+        <fail unless="profiler.info.jvm">Must set JVM to use for profiling in profiler.info.jvm</fail>
         <fail unless="profiler.info.jvmargs.agent">Must set profiler agent JVM arguments in profiler.info.jvmargs.agent</fail>
     </target>
     <!--
@@ -781,7 +781,7 @@ is divided into following sections:
                     </classpath>
                     <syspropertyset>
                         <propertyref prefix="run-sys-prop."/>
-                        <mapper from="run-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="run-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <customize/>
                 </java>
@@ -806,7 +806,7 @@ is divided into following sections:
                     </classpath>
                     <syspropertyset>
                         <propertyref prefix="run-sys-prop."/>
-                        <mapper from="run-sys-prop.*" receipients="*" type="glob"/>
+                        <mapper from="run-sys-prop.*" to="*" type="glob"/>
                     </syspropertyset>
                     <customize/>
                 </java>
@@ -821,16 +821,16 @@ is divided into following sections:
                 <property location="${build.classes.dir}" name="build.classes.dir.resolved"/>
                 <pathconvert property="run.classpath.without.build.classes.dir">
                     <path path="${run.classpath}"/>
-                    <map from="${build.classes.dir.resolved}" receipients=""/>
+                    <map from="${build.classes.dir.resolved}" to=""/>
                 </pathconvert>
                 <pathconvert pathsep=" " property="jar.classpath">
                     <path path="${run.classpath.without.build.classes.dir}"/>
                     <chainedmapper>
                         <flattenmapper/>
                         <filtermapper>
-                            <replacestring from=" " receipients="%20"/>
+                            <replacestring from=" " to="%20"/>
                         </filtermapper>
-                        <globmapper from="*" receipients="lib/*"/>
+                        <globmapper from="*" to="lib/*"/>
                     </chainedmapper>
                 </pathconvert>
                 <taskdef classname="org.netbeans.modules.java.j2seproject.copylibstask.CopyLibs" classpath="${libs.CopyLibs.classpath}" name="copylibs"/>
@@ -1001,7 +1001,7 @@ is divided into following sections:
         <property location="${dist.jar}" name="dist.jar.resolved"/>
         <pathconvert property="run.classpath.with.dist.jar">
             <path path="${run.classpath}"/>
-            <map from="${build.classes.dir.resolved}" receipients="${dist.jar.resolved}"/>
+            <map from="${build.classes.dir.resolved}" to="${dist.jar.resolved}"/>
         </pathconvert>
         <condition else="" property="jar.usage.message" value="To run this application from the command line without Ant, try:${line.separator}${platform.java} -cp ${run.classpath.with.dist.jar} ${main.class}">
             <isset property="main.class.available"/>
@@ -1145,7 +1145,7 @@ is divided into following sections:
             </classpath>
             <syspropertyset>
                 <propertyref prefix="test-sys-prop."/>
-                <mapper from="test-sys-prop.*" receipients="*" type="glob"/>
+                <mapper from="test-sys-prop.*" to="*" type="glob"/>
             </syspropertyset>
             <formatter type="brief" usefile="false"/>
             <formatter type="xml"/>
@@ -1406,7 +1406,7 @@ is divided into following sections:
         <ant antfile="${call.script}" inheritall="false" target="${call.target}">
             <propertyset>
                 <propertyref prefix="transfer."/>
-                <mapper from="transfer.*" receipients="*" type="glob"/>
+                <mapper from="transfer.*" to="*" type="glob"/>
             </propertyset>
         </ant>
     </target>
