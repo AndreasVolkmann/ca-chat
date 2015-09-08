@@ -2,9 +2,6 @@ package server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
@@ -13,7 +10,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class Server {
 
-    private static LinkedBlockingDeque<String> messages;
+    private static LinkedBlockingDeque<Message> messages;
     private static LinkedBlockingDeque<ConnectionToClient> clients;
 
     private ServerSocket serverSocket;
@@ -41,9 +38,13 @@ public class Server {
 
         while (true) {
             try {
-                String message = messages.take();
+                Message message = messages.take();
                 // protocol
-                sendAll(message);
+                if (message.equals(Message.SENDTOALL)) {
+                    sendAll(message);
+                } else {
+                    send(message);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -52,13 +53,19 @@ public class Server {
     }
 
 
-    private void sendAll(String message) {
+    private void sendAll(Message message) {
         for (ConnectionToClient client : clients) {
-            client.send(message);
+            client.send(message.getContent());
         }
     }
 
-    public static LinkedBlockingDeque<String> getMessages() {
+    private void send(Message message) {
+        for (ConnectionToClient client : message.getTo()) {
+            client.send(message.getContent());
+        }
+    }
+
+    public static LinkedBlockingDeque<Message> getMessages() {
         return messages;
     }
 
