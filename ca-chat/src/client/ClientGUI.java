@@ -7,10 +7,12 @@ package client;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Properties;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import utils.Utils;
 
 /**
  *
@@ -24,7 +26,9 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
     Client client = new Client();
     Thread t1 = new Thread(client);
     DefaultListModel<String> model1;
-
+    String ip;
+    int port;
+     private static final Properties properties = Utils.initProperties("server.properties");
     public ClientGUI() {
 
         initComponents();
@@ -36,8 +40,9 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
          {
              System.exit(-1);
          }
-        
-         client.connect("localhost", 9090);
+         this.port = Integer.parseInt(properties.getProperty("port"));
+        this.ip = properties.getProperty("serverIp");
+         client.connect(ip, port);
         t1.start();
 
         model1 = new DefaultListModel();
@@ -172,6 +177,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
         message += "#" + this.jTextField1.getText();
         System.out.println("Sending: " + message);
         client.send(message);
+        client.printToOwnClient(message);
         jTextField1.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -15,10 +15,12 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Observable;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import utils.Utils;
 
 /**
  *
@@ -27,21 +29,19 @@ import javax.swing.JOptionPane;
 public class Client extends Observable implements Runnable {
 
     private Socket socket;
-    private int port;
-    private String ip;
     private BufferedReader in;
     private PrintWriter out;
     private String name;
-
+   
     public void connect(String address, int port) {
         try {
-            this.port = port;
+            
             socket = new Socket(address, port);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             
             send("USER#"+name);
-            printWelcomeText();
+            printToOwnClient("Welcome "+name);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -53,10 +53,10 @@ public class Client extends Observable implements Runnable {
         out.println(msg);
     }
     
-    private void printWelcomeText()
+    public void printToOwnClient(String message)
     {
         setChanged();
-        notifyObservers("Welcome "+name);
+        notifyObservers(message);
     }
     
     public void setName(String name)
