@@ -1,0 +1,1 @@
+java -cp ca-chat.jar main.App

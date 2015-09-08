@@ -45,6 +45,7 @@ public class Server {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             Utils.closeLogger(Server.class.getName());
+            serverSocket.close();
         }
     }
 

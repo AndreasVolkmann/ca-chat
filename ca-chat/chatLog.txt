@@ -1,26 +1,2 @@
-sep. 08, 2015 6:24:38 PM server.Server startServer
+sep. 08, 2015 7:55:49 PM server.Server startServer
 ??: Server started on port 9090
-sep. 08, 2015 6:24:41 PM server.ConnectionToClient run
-??: Jonas: USER#Jonas
-sep. 08, 2015 6:24:41 PM server.Server run
-??: Sending message: USERLIST#Jonas
-sep. 08, 2015 6:25:12 PM server.ConnectionToClient run
-??: Jonas: MSG#null#hey
-sep. 08, 2015 6:25:12 PM server.Server run
-??: Sending message: MSG#Jonas#hey
-sep. 08, 2015 6:25:49 PM server.ConnectionToClient run
-??: null
-java.net.SocketException: Connection reset
-	at java.net.SocketInputStream.read(SocketInputStream.java:189)
-	at java.net.SocketInputStream.read(SocketInputStream.java:121)
-	at sun.nio.cs.StreamDecoder.readBytes(StreamDecoder.java:284)
-	at sun.nio.cs.StreamDecoder.implRead(StreamDecoder.java:326)
-	at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:178)
-	at java.io.InputStreamReader.read(InputStreamReader.java:184)
-	at java.io.BufferedReader.fill(BufferedReader.java:161)
-	at java.io.BufferedReader.readLine(BufferedReader.java:324)
-	at java.io.BufferedReader.readLine(BufferedReader.java:389)
-	at server.ConnectionToClient.run(ConnectionToClient.java:46)
-
-sep. 08, 2015 6:25:49 PM server.Server run
-??: Sending message: USERLIST#
