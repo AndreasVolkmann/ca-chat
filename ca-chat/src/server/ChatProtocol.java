@@ -25,20 +25,6 @@ public class ChatProtocol {
 
     }
 
-    public Message authentication(Message message, String[] in) {
-        // if the first message sent conforms to the protocol, set the username
-        if (in[0].equals(USER)) {
-            client.setClientName(in[1]);
-            clientName = in[1];
-            message = sendUserList();
-        }
-        else { // else send an error message
-            errorMessage();
-        }
-
-        return message;
-    }
-
     public Message processInput(String input) {
         String[] in = input.split("#");
         Message message = new Message();
@@ -65,13 +51,27 @@ public class ChatProtocol {
                     message.setContent("MSG" + "#" + client.getClientName() + "#" + in[2]);
                     break;
                 case STOP:
+                    client.removeClient();
                     message = sendUserList();
-                    client.setRunning(false);
                     break;
                 default:
                     errorMessage();
                     break;
             }
+        }
+
+        return message;
+    }
+
+    public Message authentication(Message message, String[] in) {
+        // if the first message sent conforms to the protocol, set the username
+        if (in[0].equals(USER)) {
+            client.setClientName(in[1]);
+            clientName = in[1];
+            message = sendUserList();
+        }
+        else { // else send an error message
+            errorMessage();
         }
 
         return message;
@@ -83,33 +83,34 @@ public class ChatProtocol {
         for (String receiver : receivers) {
             for (ConnectionToClient client : Server.getClients()) {
                 if (receiver.equals(client.getClientName())) {
-                    message.getTo().add(client);
+                    message.addRecipient(client);
                 }
             }
         }
     }
 
-    private Message sendUserList() {
+    protected Message sendUserList() {
         Message message = Message.SENDTOALL; // update everyone's user list
         message.setContent("USERLIST" + "#" + getUserList());
         return message;
     }
 
+    // creates a String consisting of the users in the client list
     private String getUserList() {
         StringBuilder stringBuilder = new StringBuilder();
         for (ConnectionToClient client : Server.getClients()) {
-            stringBuilder.append(client.getClientName() + ",");
+            stringBuilder.append(client.getClientName());
+            stringBuilder.append(",");
         }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        if (stringBuilder.length() > 0) stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         return stringBuilder.toString();
 
     }
 
     private Message errorMessage() {
         Logger.getLogger(Server.class.getName()).log(Level.WARNING, "Message does not conform to the protocol!");
-        System.out.println();
         Message message = Message.ERROR;
-        message.getTo().add(client);
+        message.addRecipient(client);
         return message;
     }
 
