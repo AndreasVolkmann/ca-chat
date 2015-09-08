@@ -71,9 +71,7 @@ public class Server {
     // Send to all excluding sender
     private void sendAll(Message message) {
         for (ConnectionToClient client : clients) {
-            if (!client.equals(message.getFrom())) {
-                client.send(message.getContent());
-            }
+            client.send(message.getContent());
         }
     }
 
