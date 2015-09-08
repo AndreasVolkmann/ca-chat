@@ -22,7 +22,6 @@ public class Message {
     }
 
 
-
     public ConnectionToClient getFrom() {
         return from;
     }

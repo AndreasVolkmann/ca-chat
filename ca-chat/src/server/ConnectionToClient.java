@@ -18,6 +18,7 @@ public class ConnectionToClient extends Thread{
     private BufferedReader in;
     private PrintWriter out;
 
+    private boolean running;
     private String clientName;
     //private int id;
 
@@ -29,35 +30,20 @@ public class ConnectionToClient extends Thread{
         } catch (IOException ex) {
             Logger.getLogger(ConnectionToClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+        running = true;
         this.start();
     }
 
 
 
-    public void send(String message)
-    {
-        out.println(message);
-    }
-
-    public String getClientName()
-    {
-        return clientName;
-    }
-
-    public void setClientName(String Name)
-    {
-        this.clientName = Name;
-    }
-
     @Override
-    public void run()
-    {
+    public void run() {
         try {
             String input;
             ChatProtocol protocol = new ChatProtocol(this);
             //Waiting for client input
-            while ((input = in.readLine()) != null) {
-                System.out.println("Received message: " + input);
+            while ((input = in.readLine()) != null && running) {
+                Logger.getLogger(ConnectionToClient.class.getName()).log(Level.INFO, ("Received message: " + input));
                 Message message = protocol.processInput(input);
                 Server.getMessages().put(message); //Putting client input into a LinkedBlockingDeque
             }
@@ -71,6 +57,23 @@ public class ConnectionToClient extends Thread{
         }
     }
 
+    public void send(String message) {
+        out.println(message);
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String Name) {
+        this.clientName = Name;
+    }
+
+    protected void removeClient() {
+        Server.getClients().remove(this);
+        running = false;
+    }
+
     private void deconstruct() {
         System.out.println("Deconstructing client ...");
         try {
@@ -79,10 +82,6 @@ public class ConnectionToClient extends Thread{
             e.printStackTrace();
         }
         out.close();
-    }
-
-    private void removeClient() {
-        Server.getClients().remove(this);
     }
 
 }

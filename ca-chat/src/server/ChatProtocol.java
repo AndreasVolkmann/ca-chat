@@ -22,15 +22,14 @@ public class ChatProtocol {
 
     }
 
-    //
     public Message authentication(Message message, String[] in) {
         // if the first message sent conforms to the protocol, set the username
         if (in[0].equals(USER)) {
-            message = Message.SENDTOALL; // update everyone's user list
             client.setClientName(in[1]);
             clientName = in[1];
-            message.setContent("USERLIST" + "#" + getUserList());
-        } else { // else send an error message
+            message = sendUserList();
+        }
+        else { // else send an error message
             errorMessage();
         }
 
@@ -44,14 +43,16 @@ public class ChatProtocol {
         // First time
         if (clientName == null) {
             message = authentication(message, in);
-        } else {
+        }
+        else {
             // Determine command
             switch (in[0]) {
                 case MESSAGE:
                     // determine whether it should send to all or specific users
                     if (in[1].equalsIgnoreCase("ALL")) {
                         message = Message.SENDTOALL;
-                    } else {
+                    }
+                    else {
                         String[] receivers = in[1].split(",");
                         addReceivers(message, receivers);
                     }
@@ -61,19 +62,17 @@ public class ChatProtocol {
                     message.setContent("MSG" + "#" + client.getClientName() + "#" + in[2]);
                     break;
                 case STOP:
-
+                    message = sendUserList();
+                    client.removeClient();
                     break;
                 default:
                     errorMessage();
                     break;
             }
-
         }
-
 
         return message;
     }
-
 
 
     // For each receiver String loop through the client list and add the corresponding ConnectionToClient to the list of receivers
@@ -85,6 +84,12 @@ public class ChatProtocol {
                 }
             }
         }
+    }
+
+    private Message sendUserList() {
+        Message message = Message.SENDTOALL; // update everyone's user list
+        message.setContent("USERLIST" + "#" + getUserList());
+        return message;
     }
 
     private String getUserList() {
