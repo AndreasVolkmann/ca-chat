@@ -1,3 +1,5 @@
 /ca-chat/nbproject/private/
 /ca-chat/build/
 /ca-chat/dist/
+.stackdump
+/ca-chat/ca-chat.jar
