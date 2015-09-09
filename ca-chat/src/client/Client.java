@@ -10,17 +10,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.Observable;
-import java.util.Properties;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import utils.Utils;
 
 /**
  *
@@ -49,7 +42,7 @@ public class Client extends Observable implements Runnable {
     }
 
     public void send(String msg) {
-        System.out.println("Sending: "+msg);
+        //System.out.println("Sending: "+msg);
         out.println(msg);
     }
     

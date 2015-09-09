@@ -5,12 +5,17 @@
  */
 package client;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.time.LocalDateTime;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 import utils.Utils;
 
@@ -28,21 +33,40 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
     DefaultListModel<String> model1;
     String ip;
     int port;
-     private static final Properties properties = Utils.initProperties("server.properties");
+    private static final Properties properties = Utils.initProperties("server.properties");
+
     public ClientGUI() {
 
         initComponents();
         client.addObserver(this);
-        UIManager.put("OptionPane.cancelButtonText", "Close the chat");
-        UIManager.put("OptionPane.okButtonText","Connect to chat");
-         client.setName(JOptionPane.showInputDialog("Welcome to the chat! Before we start, what's your name?"));
-         if(client.getName() == null)
-         {
-             System.exit(-1);
-         }
-         this.port = Integer.parseInt(properties.getProperty("port"));
+
+        JTextField field1 = new JTextField();
+        JTextField field2 = new JTextField();
+
         this.ip = properties.getProperty("serverIp");
-         client.connect(ip, port);
+        this.port = Integer.parseInt(properties.getProperty("port"));
+
+        field1.setText(ip);
+        field2.setText("" + port);
+
+        Object[] fields = {
+            "IP: ", field1,
+            "Port:", field2
+        };
+        UIManager.put("OptionPane.cancelButtonText", "Close the chat");
+        UIManager.put("OptionPane.okButtonText", "Connect to chat");
+        JOptionPane.showConfirmDialog(null, fields, "Choose an IP and port", JOptionPane.OK_CANCEL_OPTION);
+        ip = field1.getText();
+        port = Integer.parseInt(field2.getText());
+        System.out.println("IP:" + ip);
+        System.out.println("Port:" + port);
+
+        client.setName(JOptionPane.showInputDialog("Welcome to the chat! Before we start, what's your name?"));
+        if (client.getName() == null) {
+            System.exit(-1);
+        }
+
+        client.connect(ip, port);
         t1.start();
 
         model1 = new DefaultListModel();
@@ -57,9 +81,17 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
                 }
             }
         });
-        jList1.setSize(40,40);
-        //String[] names = {"Jonas","Bob","Hans"};
-        //initList(names);
+        jList1.setSize(40, 40);
+
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                client.send("STOP#");
+                dispose();
+                System.exit(-1);
+            }
+        });
     }
 
     /**
@@ -79,6 +111,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
         jTextField1 = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
+        jButton2 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -120,6 +153,12 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
         jList1.setMinimumSize(new java.awt.Dimension(20, 20));
         jScrollPane2.setViewportView(jList1);
 
+        jButton2.setText("Close chat");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -129,13 +168,18 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))
-                .addGap(21, 21, 21))
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane2)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,11 +188,17 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
                     .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
-                .addGap(19, 19, 19))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2)
+                        .addGap(0, 1, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jTextField1)))
+                .addContainerGap())
         );
 
         pack();
@@ -156,7 +206,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String message = "MSG#";
-        int i = 0;
+        int i = 1;
         if (jList1.getSelectedValuesList().isEmpty()) {
             message += "*";
         } else {
@@ -172,14 +222,21 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
                     }
 
                 }
+                i++;
             }
         }
         message += "#" + this.jTextField1.getText();
         System.out.println("Sending: " + message);
         client.send(message);
-        client.printToOwnClient(message);
+        LocalDateTime datetime = LocalDateTime.now();
+        client.printToOwnClient(datetime.getHour() + ":" + datetime.getMinute() + " | You: " + jTextField1.getText());
         jTextField1.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        client.send("STOP#");
+        System.exit(-1);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -218,6 +275,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JList jList1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -241,12 +299,10 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
         this.model1.clear();
 
         for (String str : stringArray) {
-            if(str.equals(client.getName()))
-            {
+            if (str.equals(client.getName())) {
                 str += "(You)";
             }
             model1.addElement(str);
-
         }
     }
 }
