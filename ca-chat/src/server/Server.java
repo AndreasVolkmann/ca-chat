@@ -38,6 +38,7 @@ public class Server {
 
             serverSocket = new ServerSocket();
             serverSocket.bind(new InetSocketAddress(ip, port));
+            serverSocket.setSoTimeout(0); // prevent ClientConnections from timing out
             Logger.getLogger(Server.class.getName()).log(Level.INFO, ("Server started on port " + port));
 
             run();
@@ -60,7 +61,11 @@ public class Server {
                 Logger.getLogger(Server.class.getName()).log(Level.INFO, ("Sending message: " + message.getContent()));
                 if (message.equals(Message.SENDTOALL)) {
                     sendAll(message);
-                } else {
+                }
+                else if (message.equals(Message.USERLIST)) {
+                    sendUserList(message);
+                }
+                else {
                     send(message);
                 }
             } catch (InterruptedException e) {
@@ -71,6 +76,14 @@ public class Server {
 
     // Send to all excluding sender
     private void sendAll(Message message) {
+        for (ConnectionToClient client : clients) {
+            if (!client.equals(message.getFrom())) {
+                client.send(message.getContent());
+            }
+        }
+    }
+
+    private void sendUserList(Message message) {
         for (ConnectionToClient client : clients) {
             client.send(message.getContent());
         }

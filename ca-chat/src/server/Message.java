@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Message {
 
     public static final Message SENDTOALL = new Message();
+    public static final Message USERLIST = new Message();
     public static final Message ERROR = new Message("ERROR");
 
     private ConnectionToClient from;

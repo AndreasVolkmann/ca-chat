@@ -90,7 +90,7 @@ public class ChatProtocol {
     }
 
     protected Message sendUserList() {
-        Message message = Message.SENDTOALL; // update everyone's user list
+        Message message = Message.USERLIST; // update everyone's user list
         message.setContent("USERLIST" + "#" + getUserList());
         return message;
     }
