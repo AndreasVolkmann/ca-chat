@@ -38,7 +38,7 @@ public class ChatProtocol {
             switch (in[0]) {
                 case MESSAGE:
                     // determine whether it should send to all or specific users
-                    if (in[1].equalsIgnoreCase("ALL")) {
+                    if (in[1].equalsIgnoreCase("*")) {
                         message = Message.SENDTOALL;
                     }
                     else {
