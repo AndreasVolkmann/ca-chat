@@ -32,7 +32,7 @@ public class Client extends Observable implements Runnable {
             socket = new Socket(address, port);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
-            
+            this.socket.setSoTimeout(0);
             send("USER#"+name);
             printToOwnClient("Welcome "+name);
         } catch (IOException ex) {
@@ -80,6 +80,7 @@ public class Client extends Observable implements Runnable {
         try {
             String message;
             while ((message = in.readLine()) != null) {
+                System.out.println("Recieved: "+message);
                 String messageArray[] = message.split("#");
                 if (messageArray[0].equals("MSG")) {
                     LocalDateTime datetime = LocalDateTime.now();
