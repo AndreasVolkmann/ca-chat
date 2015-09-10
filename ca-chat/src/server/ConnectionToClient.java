@@ -27,7 +27,6 @@ public class ConnectionToClient extends Thread{
     public ConnectionToClient(Socket socket) {
         this.socket = socket;
         try {
-            socket.setSoTimeout(0);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
         } catch (IOException ex) {

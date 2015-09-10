@@ -19,8 +19,10 @@ public class AcceptThread extends Thread {
         while (true) {
             try {
                 Socket socket = Server.getServerSocket().accept();
+                socket.setSoTimeout(0);
+                socket.setKeepAlive(true);
                 Server.addClient(new ConnectionToClient(socket));
-                Logger.getLogger(AcceptThread.class.getName()).log(Level.INFO, ("New client connected on port " + socket.getPort()));
+                Logger.getLogger(Server.class.getName()).log(Level.INFO, ("New client connected on port " + socket.getPort()));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {

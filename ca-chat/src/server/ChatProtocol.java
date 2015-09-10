@@ -65,7 +65,7 @@ public class ChatProtocol {
 
     public Message authentication(Message message, String[] in) {
         // if the first message sent conforms to the protocol, set the username
-        if (in[0].equals(USER)) {
+        if (in[0].equals(USER) && in[1] != null) {
             client.setClientName(in[1]);
             clientName = in[1];
             message = sendUserList();
