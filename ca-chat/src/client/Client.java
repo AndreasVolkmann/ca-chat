@@ -12,8 +12,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.Observable;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import utils.Utils;
 
 /**
  *
@@ -25,16 +27,16 @@ public class Client extends Observable implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
     private String name;
-   
+
     public void connect(String address, int port) {
         try {
-            
+
             socket = new Socket(address, port);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             this.socket.setSoTimeout(0);
-            send("USER#"+name);
-            printToOwnClient("Welcome "+name);
+            send("USER#" + name);
+            //printToOwnClient("Welcome " + name);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -42,26 +44,22 @@ public class Client extends Observable implements Runnable {
     }
 
     public void send(String msg) {
-        //System.out.println("Sending: "+msg);
         out.println(msg);
     }
-    
-    public void printToOwnClient(String message)
-    {
+
+    public void printToOwnClient(String message) {
         setChanged();
         notifyObservers(message);
     }
-    
-    public void setName(String name)
-    {
+
+    public void setName(String name) {
         this.name = name;
-        
+
     }
 
     public String getName() {
         return name;
     }
-    
 
     public boolean isConnected() {
         return socket.isConnected();
@@ -80,28 +78,31 @@ public class Client extends Observable implements Runnable {
         try {
             String message;
             while ((message = in.readLine()) != null) {
-                System.out.println("Recieved: "+message);
-                String messageArray[] = message.split("#");
-                if (messageArray[0].equals("MSG")) {
-                    LocalDateTime datetime = LocalDateTime.now();
-                    message = datetime.getHour() + ":" + datetime.getMinute() + " | " + messageArray[1] + " : " + messageArray[2];
-                    setChanged();
-                    notifyObservers(message);
-                } else if (messageArray[0].equals("USERLIST")) {
-                    String[] names = message.substring(message.indexOf("#")+1, message.length()).split(",");
-                    setChanged();
-                    notifyObservers(names);
-                } else {
-                    message = "Unknown Command";
-                     setChanged();
-                    notifyObservers(message);
-                }
+                System.out.println("Recieved: " + message);
+               
+                setChanged();
+                notifyObservers(message);
 
             }
 
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public static void main(String[] args) {
+        Client client = new Client();
+        Thread t1 = new Thread(client);
+        Properties properties = Utils.initProperties("server.properties");
+
+        int port;
+        String ip;
+        ip = properties.getProperty("serverIp");
+        port = Integer.parseInt(properties.getProperty("port"));
+        client.setName("Client");
+        client.connect(ip, port);
+        t1.start();
+
     }
 
 }
