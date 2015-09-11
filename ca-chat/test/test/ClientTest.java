@@ -74,17 +74,37 @@ public class ClientTest implements Observer{
     @Test
     public void clientTestConnection() throws InterruptedException {
         System.out.println("In clientTestConnection");
-        Thread.sleep(2000);//Have to wait for the response, else it would be null.
+        Thread.sleep(100);//Have to wait for the response, else it would be null.
        assertEquals("USERLIST#testClient,testClient2",messageReceived);
     }
     
     @Test
-    public void clientTestSend() throws InterruptedException
+    public void clientTestSendToOne() throws InterruptedException
     {
         System.out.println("In clientTestSend");
-        Thread.sleep(2000);
+        Thread.sleep(100);
         client.send("MSG#testClient2#TestingSendProtocol");
-        Thread.sleep(2000);
+        Thread.sleep(100);
+        assertEquals("MSG#testClient#TestingSendProtocol",messageReceived);  
+    }
+    
+    @Test
+    public void clientTestSendToMultiple() throws InterruptedException
+    {
+        System.out.println("In clientTestSendToMultiple");
+        Thread.sleep(100);
+        client.send("MSG#testClient,testClient2#TestingSendProtocol");
+        Thread.sleep(100);
+        assertEquals("MSG#testClient#TestingSendProtocol",messageReceived);  
+    }
+    
+    @Test
+    public void clientTestSendToAll() throws InterruptedException
+    {
+        System.out.println("In clientTestSendToAll");
+        Thread.sleep(100);
+        client.send("MSG#*#TestingSendProtocol");
+        Thread.sleep(100);
         assertEquals("MSG#testClient#TestingSendProtocol",messageReceived);  
     }
     
@@ -92,9 +112,9 @@ public class ClientTest implements Observer{
     public void clientTestStop() throws InterruptedException
     {
         System.out.println("In clientTestStop");
-        Thread.sleep(2000);
+        Thread.sleep(100);
         client.send("STOP#");
-        Thread.sleep(2000);
+        Thread.sleep(100);
         assertEquals(true,client.isConnected());
     }
     
