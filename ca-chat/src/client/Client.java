@@ -36,7 +36,6 @@ public class Client extends Observable implements Runnable {
             out = new PrintWriter(socket.getOutputStream(), true);
             this.socket.setSoTimeout(0);
             send("USER#" + name);
-            //printToOwnClient("Welcome " + name);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }

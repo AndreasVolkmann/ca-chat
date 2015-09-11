@@ -45,6 +45,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
         
         ipPortSetup();
         littleHelper.getAndSetClientName(client);
+        setTitle(ip + "-" +client.getName());
         client.connect(ip, port);
         t1.start();
 
@@ -214,7 +215,6 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
     // End of variables declaration//GEN-END:variables
 
     //<editor-fold defaultstate="collapsed" desc="Custom methods">
-    
 
     @Override
     public void update(Observable o, Object arg) {
@@ -267,6 +267,7 @@ public class ClientGUI extends javax.swing.JFrame implements Observer {
                 System.exit(-1);
             }
         });
+        
     }
     
     private void ipPortSetup()

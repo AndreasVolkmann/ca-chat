@@ -24,7 +24,9 @@ import utils.Utils;
 public class ClientTest implements Observer{
 
     Client client;
+    Client client2;
     Thread t1;
+    Thread t2;
     Properties properties = Utils.initProperties("server.properties");
 
     int port;
@@ -32,37 +34,68 @@ public class ClientTest implements Observer{
     String messageReceived;
 
     public ClientTest() {
+        client = new Client();
+        client2 = new Client();
+        t1 = new Thread(client);
+        t2 = new Thread(client2);
+        ip = properties.getProperty("serverIp");
+        port = Integer.parseInt(properties.getProperty("port"));
+        client.addObserver(this);
+        client2.addObserver(this);
+        client.setName("testClient");
+        client2.setName("testClient2");
+        client.connect(ip, port);
+        client2.connect(ip, port);
+        t1.start();
+        t2.start();
     }
 
     @BeforeClass
     public static void setUpClass() {
+        
     }
 
     @AfterClass
     public static void tearDownClass() {
+        
     }
 
     @Before
     public void setUp() {
-        client = new Client();
-        t1 = new Thread(client);
-        ip = properties.getProperty("serverIp");
-        port = Integer.parseInt(properties.getProperty("port"));
-        client.addObserver(this);
-        client.setName("testClient");
+        
     }
 
     @After
     public void tearDown() {
+        client.send("STOP#");
+        client2.send("STOP#");
     }
 
     @Test
     public void clientTestConnection() throws InterruptedException {
-        client.connect(ip, port);
-        t1.start();
-        Thread.sleep((2000));//Have to wait for the response, else it would be null.
-       assertEquals("USERLIST#testClient",messageReceived);
-
+        System.out.println("In clientTestConnection");
+        Thread.sleep(2000);//Have to wait for the response, else it would be null.
+       assertEquals("USERLIST#testClient,testClient2",messageReceived);
+    }
+    
+    @Test
+    public void clientTestSend() throws InterruptedException
+    {
+        System.out.println("In clientTestSend");
+        Thread.sleep(2000);
+        client.send("MSG#testClient2#TestingSendProtocol");
+        Thread.sleep(2000);
+        assertEquals("MSG#testClient#TestingSendProtocol",messageReceived);  
+    }
+    
+    @Test
+    public void clientTestStop() throws InterruptedException
+    {
+        System.out.println("In clientTestStop");
+        Thread.sleep(2000);
+        client.send("STOP#");
+        Thread.sleep(2000);
+        assertEquals(true,client.isConnected());
     }
     
 
@@ -74,6 +107,7 @@ public class ClientTest implements Observer{
 
     @Override
     public void update(Observable o, Object arg) {
+        System.out.println("messageReceived = "+(String)arg);
         messageReceived = (String)arg;
     }
 }

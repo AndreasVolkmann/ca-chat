@@ -81,6 +81,11 @@ public class ConnectionToClient extends Thread{
     protected void removeClient() {
         System.out.println("Removing Client ...");
         Server.getClients().remove(this);
+        try {
+            this.socket.close();
+        } catch (IOException ex) {
+            Logger.getLogger(ConnectionToClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
         running = false;
     }
 
