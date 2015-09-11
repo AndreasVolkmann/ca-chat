@@ -80,6 +80,10 @@ public class Server {
             if (!client.equals(message.getFrom())) {
                 client.send(message.getContent());
             }
+            else
+            {
+                System.out.println("In the else");
+            }
         }
     }
 
